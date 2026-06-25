@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /admin
-Sitemap: https://regilaqua.com/sitemap.xml
+
+Sitemap: https://www.rigelaqua.in/sitemap.xml
