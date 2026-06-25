@@ -518,7 +518,7 @@ export default function Home() {
       <ContactForm 
         isOpen={isContactOpen} 
         onClose={() => setIsContactOpen(false)} 
-        productName={selectedProduct}
+        product_name={selectedProduct}
       />
     </div>
   );

@@ -47,6 +47,11 @@ export interface SiteSettings {
   faqs: FAQ[];
   bentoImage: string;
   featuredCollections: FeaturedCollection[];
+  facebookUrl?: string;
+  instagramUrl?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  contactNumber?: string;
 }
 
 // ─── Default fallback ─────────────

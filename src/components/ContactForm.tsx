@@ -7,10 +7,10 @@ import { inquiryService } from '../services/inquiryService';
 interface ContactFormProps {
   isOpen: boolean;
   onClose: () => void;
-  productName?: string;
+  product_name?: string;
 }
 
-export default function ContactForm({ isOpen, onClose, productName }: ContactFormProps) {
+export default function ContactForm({ isOpen, onClose, product_name }: ContactFormProps) {
   const { settings } = useSettings();
   const [formData, setFormData] = React.useState({
     name: '',
@@ -28,7 +28,7 @@ export default function ContactForm({ isOpen, onClose, productName }: ContactFor
     // Save to inquiry service
     inquiryService.addInquiry({
       ...formData,
-      productName
+      product_name
     });
 
     // Simulate API call
@@ -69,7 +69,7 @@ export default function ContactForm({ isOpen, onClose, productName }: ContactFor
               </button>
               <h2 className="text-3xl font-black mb-2">Get a Quote</h2>
               <p className="text-regil-sky font-bold">
-                {productName ? `Inquiry for: ${productName}` : "We'll get back to you within 24 hours."}
+                {product_name ? `Inquiry for: ${product_name}` : "We'll get back to you within 24 hours."}
               </p>
             </div>
 

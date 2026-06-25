@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Plus, Trash2, Edit3, Save, X, Package, LayoutDashboard, Image as ImageIcon, CheckCircle2, AlertCircle, Settings, Globe, MessageSquare, Star, ExternalLink, ShieldCheck, Search, Lock, LogOut } from 'lucide-react';
+import { Plus, Trash2, Edit3, Save, X, Package, LayoutDashboard, Image as ImageIcon, CheckCircle2, AlertCircle, Settings, Globe, MessageSquare, Star, ExternalLink, ShieldCheck, Search, Lock, LogOut, Mail, HelpCircle, Check } from 'lucide-react';
 import { auth } from '../../lib/firebase';
 import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { blogService } from '../../services/blogService';
@@ -490,12 +490,18 @@ export default function Admin() {
                             </div>
                           </td>
                           <td className="px-6 py-4">
-                            <span className="text-xs font-black text-regil-blue bg-regil-sky/10 px-2 py-0.5 rounded-none">
-                              {inq.productName || 'General Inquiry'}
+                            <span className="text-xs font-black text-regil-blue bg-regil-sky/10 px-2 py-0.5 rounded-none flex items-center space-x-1">
+                              {inq.product_name && (
+                                <>
+                                  <Package className="w-3 h-3" />
+                                  <span>{inq.product_name}</span>
+                                </>
+                              )}
+                              {!inq.product_name && <span>General Inquiry</span>}
                             </span>
                           </td>
                           <td className="px-6 py-4 text-xs font-bold text-slate-500">
-                            {new Date(inq.createdAt).toLocaleDateString()}
+                            {new Date(inq.created_at).toLocaleDateString()}
                           </td>
                           <td className="px-6 py-4">
                             <select 
