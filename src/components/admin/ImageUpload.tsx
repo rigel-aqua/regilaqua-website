@@ -65,15 +65,15 @@ export default function ImageUpload({
         {preview ? (
           <div className="relative aspect-video w-full overflow-hidden border border-slate-200 bg-slate-50">
             <img src={preview} alt="Preview" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-              <label className="cursor-pointer bg-white text-slate-900 px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-colors">
-                Change
+            <div className="absolute inset-0 bg-slate-900/40 flex flex-col md:flex-row items-center justify-center gap-4 p-4">
+              <label className="cursor-pointer bg-white text-slate-900 px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-slate-100 transition-colors shadow-lg">
+                Change Image
                 <input type="file" className="hidden" accept="image/*" onChange={handleUpload} disabled={uploading} />
               </label>
               <button 
                 type="button" 
                 onClick={() => { setPreview(''); onUpload(''); }}
-                className="bg-red-500 text-white px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-colors"
+                className="bg-red-500 text-white px-4 py-2 text-xs font-black uppercase tracking-widest hover:bg-red-600 transition-colors shadow-lg"
               >
                 Remove
               </button>
