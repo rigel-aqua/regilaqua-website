@@ -102,40 +102,6 @@ export default function About() {
           </div>
         </div>
 
-        {/* Founder Details */}
-        <div className="mb-32">
-          <div className="text-center mb-16">
-            <h2 className="text-regil-blue font-black uppercase tracking-widest text-xs mb-4">Leadership</h2>
-            <h3 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tighter">The Driving Force</h3>
-          </div>
-          <div className="bg-slate-50 border border-slate-200 p-8 md:p-16 flex flex-col md:flex-row items-center gap-16 rounded-none">
-            <div className="w-64 h-64 shrink-0 bg-slate-200 overflow-hidden border-8 border-white shadow-2xl rounded-none">
-              <img 
-                src="https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=800" 
-                alt="Founder" 
-                className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
-              />
-            </div>
-            <div className="flex-1">
-              <h4 className="text-3xl font-black text-slate-900 mb-2">B. Rajashekar Reddy</h4>
-              <p className="text-regil-blue font-black uppercase tracking-widest text-sm mb-6">Founder & Managing Director</p>
-              <Quote className="w-12 h-12 text-regil-sky/30 mb-4" />
-              <p className="text-xl text-slate-600 font-medium leading-relaxed mb-8">
-                "Water isn't just a commodity; it's the foundation of life and industry. At RegilAqua, we built our reputation on the belief that transparency in technology and sincerity in service can solve any water crisis. We remain committed to keeping our machines efficient and our customers satisfied across the state."
-              </p>
-              <div className="flex items-center space-x-8 text-slate-400">
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-regil-green rounded-none" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Visionary Leadership</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-2 h-2 bg-regil-green rounded-none" />
-                  <span className="text-[10px] font-black uppercase tracking-widest">Industry Expert</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Why Trust Us */}
         <div className="bg-slate-900 p-12 md:p-20 relative overflow-hidden mb-32 rounded-none">

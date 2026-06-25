@@ -77,15 +77,22 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-          <p className="text-xs text-slate-500">
-            © {new Date().getFullYear()} RegilAqua. All rights reserved.
-          </p>
-          <div className="flex items-center space-x-6">
-            <Link to="/privacy" className="text-slate-500 hover:text-white transition-colors font-medium">Privacy Policy</Link>
-            <Link to="/terms" className="text-slate-500 hover:text-white transition-colors font-medium">Terms of Service</Link>
+        <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col justify-center items-center space-y-4">
+          <div className="text-center text-xs text-slate-500 font-medium space-y-1">
+            <p>Trade Name: <span className="text-slate-400">K K INDUSTRIES</span> | Proprietor: <span className="text-slate-400">VELUKURI KOMALA REDDY</span></p>
+            <p>GSTIN: <span className="text-slate-400">37ANVPV3364N1ZT</span></p>
+          </div>
+          <div className="w-full flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 pt-4">
+            <p className="text-xs text-slate-500">
+              © {new Date().getFullYear()} K K Industries. All rights reserved.
+            </p>
+            <div className="flex items-center space-x-6">
+              <Link to="/privacy" className="text-slate-500 hover:text-white transition-colors font-medium">Privacy Policy</Link>
+              <Link to="/terms" className="text-slate-500 hover:text-white transition-colors font-medium">Terms of Service</Link>
+            </div>
           </div>
         </div>
+
       </div>
 
       {/* Floating WhatsApp for all pages */}
