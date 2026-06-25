@@ -1,48 +1,36 @@
-import { supabase } from '../lib/supabase';
+import { collection, doc, getDocs, getDoc, setDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { Product } from '../types';
 
 export const productService = {
   getProducts: async (): Promise<Product[]> => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
+    const q = query(collection(db, 'products'), orderBy('created_at', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
   },
 
   getProductById: async (id: string): Promise<Product | null> => {
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const docRef = doc(db, 'products', id);
+    const docSnap = await getDoc(docRef);
     
-    if (error) throw error;
-    return data;
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as Product;
+    }
+    return null;
   },
 
   saveProduct: async (product: Omit<Product, 'id'> & { id?: string }): Promise<void> => {
     if (product.id) {
-      const { error } = await supabase
-        .from('products')
-        .update(product)
-        .eq('id', product.id);
-      if (error) throw error;
+      const docRef = doc(db, 'products', product.id);
+      await setDoc(docRef, product, { merge: true });
     } else {
-      const { error } = await supabase
-        .from('products')
-        .insert([product]);
-      if (error) throw error;
+      const newDocRef = doc(collection(db, 'products'));
+      await setDoc(newDocRef, { ...product, id: newDocRef.id });
     }
   },
 
   deleteProduct: async (id: string): Promise<void> => {
-    const { error } = await supabase
-      .from('products')
-      .delete()
-      .eq('id', id);
-    if (error) throw error;
+    const docRef = doc(db, 'products', id);
+    await deleteDoc(docRef);
   }
 };

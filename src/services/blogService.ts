@@ -1,54 +1,43 @@
-import { supabase } from '../lib/supabase';
+import { collection, doc, getDocs, getDoc, setDoc, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { Blog } from '../types';
 
 export const blogService = {
   getBlogs: async (): Promise<Blog[]> => {
-    const { data, error } = await supabase
-      .from('blogs')
-      .select('*')
-      .order('date', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
+    const q = query(collection(db, 'blogs'), orderBy('date', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Blog));
   },
 
   getBlogById: async (id: string): Promise<Blog | null> => {
-    const { data, error } = await supabase
-      .from('blogs')
-      .select('*')
-      .eq('id', id)
-      .single();
+    const docRef = doc(db, 'blogs', id);
+    const docSnap = await getDoc(docRef);
     
-    if (error) throw error;
-    return data;
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() } as Blog;
+    }
+    return null;
   },
 
   saveBlog: async (blog: Omit<Blog, 'id' | 'date'> & { id?: string }): Promise<void> => {
     if (blog.id) {
-      const { error } = await supabase
-        .from('blogs')
-        .update({
-          ...blog,
-          date: new Date().toISOString() // Update date on edit? Or keep original? Usually keep original.
-        })
-        .eq('id', blog.id);
-      if (error) throw error;
+      const docRef = doc(db, 'blogs', blog.id);
+      await setDoc(docRef, {
+        ...blog,
+        date: new Date().toISOString()
+      }, { merge: true });
     } else {
-      const { error } = await supabase
-        .from('blogs')
-        .insert([{
-          ...blog,
-          date: new Date().toISOString()
-        }]);
-      if (error) throw error;
+      const newDocRef = doc(collection(db, 'blogs'));
+      await setDoc(newDocRef, {
+        ...blog,
+        id: newDocRef.id,
+        date: new Date().toISOString()
+      });
     }
   },
 
   deleteBlog: async (id: string): Promise<void> => {
-    const { error } = await supabase
-      .from('blogs')
-      .delete()
-      .eq('id', id);
-    if (error) throw error;
+    const docRef = doc(db, 'blogs', id);
+    await deleteDoc(docRef);
   }
 };

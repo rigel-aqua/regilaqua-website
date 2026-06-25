@@ -1,4 +1,5 @@
-import { supabase } from '../lib/supabase';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export interface HeroBanner {
   id: string;
@@ -48,7 +49,7 @@ export interface SiteSettings {
   featuredCollections: FeaturedCollection[];
 }
 
-// ─── Default fallback (shown only when Supabase is unreachable) ─────────────
+// ─── Default fallback ─────────────
 export const DEFAULT_SETTINGS: SiteSettings = {
   email: 'info@rigelaqua.in',
   whatsappNumber: '918885999979',
@@ -79,46 +80,32 @@ export const DEFAULT_SETTINGS: SiteSettings = {
   ]
 };
 
-// ─── All reads/writes go directly to Supabase — NO localStorage ────────────
+// ─── All reads/writes go directly to Firestore ────────────
 export const settingsService = {
-  // Exposed so SettingsContext can use as initial state before fetch completes
   DEFAULT_SETTINGS,
 
-  // Fetch site settings from Supabase (single source of truth)
   fetchSettings: async (): Promise<SiteSettings> => {
-    const { data, error } = await supabase
-      .from('settings')
-      .select('value')
-      .eq('key', 'site_settings')
-      .single();
+    const docRef = doc(db, 'settings', 'site_settings');
+    const docSnap = await getDoc(docRef);
 
-    if (error || !data?.value) {
-      console.warn('Settings not found in Supabase, using defaults.');
+    if (!docSnap.exists() || !docSnap.data()?.value) {
+      console.warn('Settings not found in Firestore, using defaults.');
       return DEFAULT_SETTINGS;
     }
 
-    // Merge with defaults so new fields always exist even if DB row is old
-    return { ...DEFAULT_SETTINGS, ...data.value };
+    return { ...DEFAULT_SETTINGS, ...docSnap.data().value };
   },
 
-  // Save site settings to Supabase only
   saveSettings: async (settings: SiteSettings): Promise<void> => {
-    const { error } = await supabase
-      .from('settings')
-      .upsert({ key: 'site_settings', value: settings });
-
-    if (error) throw error;
+    const docRef = doc(db, 'settings', 'site_settings');
+    await setDoc(docRef, { value: settings }, { merge: true });
   },
 
-  // Fetch SEO settings from Supabase
   getSEO: async (): Promise<SEOSettings> => {
-    const { data, error } = await supabase
-      .from('settings')
-      .select('value')
-      .eq('key', 'seo')
-      .single();
+    const docRef = doc(db, 'settings', 'seo');
+    const docSnap = await getDoc(docRef);
 
-    if (error || !data?.value) {
+    if (!docSnap.exists() || !docSnap.data()?.value) {
       return {
         title: 'RigelAqua | Advanced Water Solutions',
         description: 'High-end water purification systems for domestic, commercial, and industrial use.',
@@ -126,15 +113,11 @@ export const settingsService = {
         ogImage: ''
       };
     }
-    return data.value;
+    return docSnap.data().value;
   },
 
-  // Save SEO settings to Supabase only
   updateSEO: async (seo: SEOSettings): Promise<void> => {
-    const { error } = await supabase
-      .from('settings')
-      .upsert({ key: 'seo', value: seo });
-
-    if (error) throw error;
+    const docRef = doc(db, 'settings', 'seo');
+    await setDoc(docRef, { value: seo }, { merge: true });
   }
 };

@@ -1,4 +1,5 @@
-import { supabase } from '../lib/supabase';
+import { collection, doc, getDocs, setDoc, deleteDoc, query, orderBy, updateDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export interface Inquiry {
   id: string;
@@ -13,38 +14,28 @@ export interface Inquiry {
 
 export const inquiryService = {
   getInquiries: async (): Promise<Inquiry[]> => {
-    const { data, error } = await supabase
-      .from('inquiries')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) throw error;
-    return data || [];
+    const q = query(collection(db, 'inquiries'), orderBy('created_at', 'desc'));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Inquiry));
   },
   
   addInquiry: async (inquiry: Omit<Inquiry, 'id' | 'created_at' | 'status'>): Promise<void> => {
-    const { error } = await supabase
-      .from('inquiries')
-      .insert([{
-        ...inquiry,
-        status: 'new'
-      }]);
-    if (error) throw error;
+    const newDocRef = doc(collection(db, 'inquiries'));
+    await setDoc(newDocRef, {
+      ...inquiry,
+      id: newDocRef.id,
+      created_at: new Date().toISOString(),
+      status: 'new'
+    });
   },
 
   updateStatus: async (id: string, status: Inquiry['status']): Promise<void> => {
-    const { error } = await supabase
-      .from('inquiries')
-      .update({ status })
-      .eq('id', id);
-    if (error) throw error;
+    const docRef = doc(db, 'inquiries', id);
+    await updateDoc(docRef, { status });
   },
 
   deleteInquiry: async (id: string): Promise<void> => {
-    const { error } = await supabase
-      .from('inquiries')
-      .delete()
-      .eq('id', id);
-    if (error) throw error;
+    const docRef = doc(db, 'inquiries', id);
+    await deleteDoc(docRef);
   }
 };

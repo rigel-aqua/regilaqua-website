@@ -1,39 +1,13 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { 
-  Plus, 
-  Trash2, 
-  Edit3, 
-  Save, 
-  X, 
-  Package, 
-  LayoutDashboard, 
-  Eye, 
-  Image as ImageIcon,
-  Check,
-  CheckCircle2,
-  AlertCircle,
-  Settings,
-  Phone,
-  Mail,
-  MapPin,
-  Globe,
-  MessageSquare,
-  Star,
-  HelpCircle,
-  ExternalLink,
-  ChevronRight,
-  ShieldCheck,
-  Search,
-  Lock,
-  LogOut
-} from 'lucide-react';
-import { supabase } from '../../lib/supabase';
+import { Plus, Trash2, Edit3, Save, X, Package, LayoutDashboard, Image as ImageIcon, CheckCircle2, AlertCircle, Settings, Globe, MessageSquare, Star, ExternalLink, ShieldCheck, Search, Lock, LogOut } from 'lucide-react';
+import { auth } from '../../lib/firebase';
+import { signInWithEmailAndPassword, onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { blogService } from '../../services/blogService';
 import { productService } from '../../services/productService';
 import { settingsService, SiteSettings, HeroBanner, Testimonial, FAQ, SEOSettings, FeaturedCollection } from '../../services/settingsService';
 import { inquiryService, Inquiry } from '../../services/inquiryService';
-import { Product, Category, Blog } from '../../types';
+import { Product, Blog } from '../../types';
 import Markdown from 'react-markdown';
 import { cn } from '../../lib/utils';
 import Logo from '../../components/Logo';
@@ -81,24 +55,18 @@ export default function Admin() {
     ogImage: ''
   });
   const [isAuthenticated, setIsAuthenticated] = React.useState(false);
-  const [user, setUser] = React.useState<any>(null);
+  const [user, setUser] = React.useState<User | null>(null);
   const [loginEmail, setLoginEmail] = React.useState('');
   const [loginPass, setLoginPass] = React.useState('');
 
   const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    // Check initial session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session);
-      setUser(session?.user || null);
-      setLoading(false);
-    });
-
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setIsAuthenticated(!!session);
-      setUser(session?.user || null);
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setIsAuthenticated(!!currentUser);
+      setUser(currentUser);
+      setLoading(false);
     });
     
     loadProducts();
@@ -106,7 +74,7 @@ export default function Admin() {
     loadBlogs();
     loadSEO();
 
-    return () => subscription.unsubscribe();
+    return () => unsubscribe();
   }, []);
 
   const loadProducts = async () => {
@@ -247,13 +215,10 @@ export default function Admin() {
           <form className="space-y-6" onSubmit={async (e) => {
             e.preventDefault();
             setLoading(true);
-            const { error } = await supabase.auth.signInWithPassword({
-              email: loginEmail,
-              password: loginPass,
-            });
-            
-            if (error) {
-              alert(`LOGIN FAILED:\nMessage: ${error.message}\nStatus: ${error.status}\n\nHint: If you are on the live site, ensure Vercel Environment Variables are set.`);
+            try {
+              await signInWithEmailAndPassword(auth, loginEmail, loginPass);
+            } catch (error: any) {
+              alert(`LOGIN FAILED:\nMessage: ${error.message}\n\nHint: Verify your Firebase credentials.`);
             }
             setLoading(false);
           }}>
@@ -341,7 +306,7 @@ export default function Admin() {
               <span>Settings</span>
             </button>
             <button 
-              onClick={() => supabase.auth.signOut()}
+              onClick={() => signOut(auth)}
               className="flex items-center space-x-3 w-full text-left px-4 py-3 text-red-400 hover:text-red-500 transition-colors text-sm font-black mt-10 border border-red-400/20"
             >
               <LogOut className="w-4 h-4" />

@@ -1,6 +1,7 @@
 import React from 'react';
 import imageCompression from 'browser-image-compression';
-import { supabase } from '../../lib/supabase';
+import { storage } from '../../lib/firebase';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploadProps {
@@ -41,17 +42,11 @@ export default function ImageUpload({
       
       const fileExt = 'webp';
       const fileName = `${Math.random().toString(36).substring(2)}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const filePath = `${bucket}/${fileName}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from(bucket)
-        .upload(filePath, compressedFile);
-
-      if (uploadError) throw uploadError;
-
-      const { data: { publicUrl } } = supabase.storage
-        .from(bucket)
-        .getPublicUrl(filePath);
+      const storageRef = ref(storage, filePath);
+      await uploadBytes(storageRef, compressedFile);
+      const publicUrl = await getDownloadURL(storageRef);
 
       setPreview(publicUrl);
       onUpload(publicUrl);
